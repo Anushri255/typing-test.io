@@ -1,181 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Typing Practice</title>
+    <title>Typing Test</title>
     <style>
         body {
-            font-family: 'Verdana', sans-serif;
+            font-family: Arial, sans-serif;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #e0f7fa;
+            background-color: #f0f0f0;
         }
 
-        .header {
+        .banner {
             width: 100%;
-            background-color: #00796b;
-            color: #ffffff;
-            padding: 15px;
+            background-color: #2196F3;
+            color: white;
+            padding: 20px;
             text-align: center;
-            font-size: 22px;
-            font-weight: 700;
+            font-size: 24px;
+            font-weight: bold;
             position: fixed;
             top: 0;
             left: 0;
-            z-index: 1000;
+            z-index: 1;
         }
 
         .content {
             text-align: center;
-            background-color: #ffffff;
-            border: 2px solid #b2dfdb;
-            max-width: 500px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            max-width: 600px;
             width: 100%;
-            margin-top: 70px; /* Adjusted for the header */
-            padding: 15px;
-            border-radius: 8px;
+            margin-top: 80px; /* Adjusted to account for the banner */
+            padding: 20px;
+            border-radius: 10px;
         }
 
-        #input-box {
+        #input-box, #user-passage {
             width: 100%;
-            height: 90px;
-            font-size: 15px;
+            height: 100px;
+            font-size: 16px;
             margin-top: 10px;
             padding: 10px;
-            border: 1px solid #b2dfdb;
+            border: 1px solid #ddd;
             border-radius: 5px;
         }
 
-        .action-button {
-            padding: 12px 25px;
-            background-color: #00796b;
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
             color: white;
             border: none;
-            margin-top: 15px;
+            margin-top: 20px;
             border-radius: 5px;
             cursor: pointer;
         }
 
-        .action-button:hover {
-            background-color: #004d40;
+        button:hover {
+            background-color: #45a049;
         }
 
-        #results-section {
-            margin-top: 15px;
+        #results {
+            margin-top: 20px;
         }
 
-        #results-section p {
-            font-size: 16px;
-            margin: 4px 0;
+        #results p {
+            font-size: 18px;
+            margin: 5px 0;
         }
 
-        #results-section span {
+        #results span {
             font-weight: bold;
         }
 
-        #countdown {
-            font-size: 16px;
-            margin: 8px 0;
+        #timer {
+            font-size: 18px;
+            margin: 10px 0;
         }
     </style>
 </head>
 <body>
-    <div class="header">Typing Practice Challenge</div>
-    <h4>Type the text below as quickly as you can!</h4>
+    <div class="banner">Typing Test</div>
+    <h4>Copy the text shown below into the box!</h4>
 
     <div class="content">
-        <p id="text-display">Here’s a sample sentence for you to type.</p>
-        <textarea id="input-box" placeholder="Begin typing here..."></textarea>
-        <p id="countdown">Elapsed Time: <span id="countdown-display">0:00</span></p>
-        <div id="results-section">
-            <p>Previous Results:</p>
-            <p>Words Per Minute: <span id="words-per-minute">0</span></p>
-            <p>Typing Accuracy: <span id="accuracy-rate">0</span>%</p>
+        <textarea id="user-passage" placeholder="Enter your own passage here if you wish or else use the one shown below...Then press set text button...then start button"></textarea>
+        <button id="set-text-button">Set Text</button>
+        <p id="text-to-type">Here is a sample text to type.</p>
+        <textarea id="input-box" placeholder="Start typing here..."></textarea>
+        <p id="timer">Time: <span id="timer-display">0:00</span></p>
+        <div id="results">
+            <p>Results (for previous test)</p>
+            <p> Speed: <span id="speed">0</span> Words Per Min</p>
+            <p>Accuracy: <span id="accuracy">0</span>%</p>
         </div>
-        <button class="action-button" id="start-test-button">Start Test</button>
+        <button id="start-button">Start Test</button>
     </div>
     <script>
-        var textDisplay = document.getElementById('text-display');
+        var textDisplay = document.getElementById('text-to-type');
         var inputBox = document.getElementById('input-box');
-        var wordsPerMinuteDisplay = document.getElementById('words-per-minute');
-        var accuracyRateDisplay = document.getElementById('accuracy-rate');
-        var countdownDisplay = document.getElementById('countdown-display');
-        var startTestButton = document.getElementById('start-test-button');
+        var speedElement = document.getElementById('speed');
+        var accuracyElement = document.getElementById('accuracy');
+        var timerDisplayElement = document.getElementById('timer-display');
+        var startButton = document.getElementById('start-button');
+        var setTextButton = document.getElementById('set-text-button');
+        var userPassageElement = document.getElementById('user-passage');
 
-        var sampleTexts = [
-            'A fast brown fox jumps over the sleepy dog.',
-            'Greetings! Is this your first school day?',
-            'Typing practice helps improve your speed and accuracy.',
-            'Keep practicing to perfect your typing skills!',
-            'Hackclub is fantastic; wish I had discovered it sooner.'
+        var phrases = [
+            'The quick brown fox jumps over the lazy dog.',
+            'Hello, is this your first day at school?',
+            'I am typing a sentence to test my typing speed.',
+            'The sun rises in the east and sets in the west.',
+            'Practice makes perfect. Keep typing!',
+            'Hackclub is amazing, wish I knew about it earlier'
         ];
 
-        var testStartTime;
-        var countdownInterval;
+        var currentText = phrases[0]; // Default text
+        var startTime;
+        var timerInterval;
 
-        function getRandomText() {
-            var index = Math.floor(Math.random() * sampleTexts.length);
-            return sampleTexts[index];
+        function getRandomPhrase() {
+            var randomIndex = Math.floor(Math.random() * phrases.length);
+            return phrases[randomIndex];
         }
 
-        function calculateWPM(startTime, endTime, textLength) {
-            var minutesElapsed = (endTime - startTime) / 60000;
-            var wordCount = textLength / 5; // Approximate word count
-            return Math.round(wordCount / minutesElapsed);
+        function calculateSpeed(startTime, endTime, textLength) {
+            var timeTaken = (endTime - startTime) / 60000; // minutes
+            var wordsTyped = textLength / 5; // Approximate words
+            return Math.round(wordsTyped / timeTaken);
         }
 
-        function computeAccuracy(userText, correctText) {
-            var userWords = userText.trim().split(' ');
-            var correctWords = correctText.trim().split(' ');
-            var matchCount = 0;
-            for (var i = 0; i < Math.min(userWords.length, correctWords.length); i++) {
-                if (userWords[i] === correctWords[i]) {
-                    matchCount++;
+        function calculateAccuracy(inputText, originalText) {
+            var inputWords = inputText.trim().split(' ');
+            var originalWords = originalText.trim().split(' ');
+            var correctWords = 0;
+            for (var i = 0; i < Math.min(inputWords.length, originalWords.length); i++) {
+                if (inputWords[i] === originalWords[i]) {
+                    correctWords++;
                 }
             }
-            return Math.round((matchCount / correctWords.length) * 100);
+            return Math.round((correctWords / originalWords.length) * 100);
         }
 
-        function initiateTypingTest() {
-            textDisplay.textContent = getRandomText();
+        function startTypingTest() {
+            textDisplay.textContent = currentText;
             inputBox.value = '';
             inputBox.focus();
-            testStartTime = new Date();
-            countdownDisplay.textContent = '0:00';
-            clearInterval(countdownInterval);
-            countdownInterval = setInterval(updateCountdown, 1000);
+            startTime = new Date();
+            timerDisplayElement.textContent = '0:00';
+            clearInterval(timerInterval);
+            timerInterval = setInterval(updateTimer, 1000);
         }
 
-        function updateCountdown() {
+        function updateTimer() {
             var currentTime = new Date();
-            var elapsed = Math.floor((currentTime - testStartTime) / 1000);
-            var minutes = Math.floor(elapsed / 60);
-            var seconds = elapsed % 60;
-            countdownDisplay.textContent = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
+            var timeElapsed = Math.floor((currentTime - startTime) / 1000);
+            var minutes = Math.floor(timeElapsed / 60);
+            var seconds = timeElapsed % 60;
+            timerDisplayElement.textContent = minutes + ':' + (seconds < 10 ? '0' : '') + seconds;
         }
 
         inputBox.addEventListener('input', function() {
-            var correctText = textDisplay.textContent;
+            var originalText = textDisplay.textContent;
             var userText = inputBox.value;
 
-            if (userText.trim() === correctText.trim()) {
+            if (userText.trim() === originalText.trim()) {
                 var endTime = new Date();
-                var wpm = calculateWPM(testStartTime, endTime, userText.length);
-                var accuracy = computeAccuracy(userText, correctText);
-                wordsPerMinuteDisplay.textContent = wpm;
-                accuracyRateDisplay.textContent = accuracy;
-                clearInterval(countdownInterval);
-                alert('Typing test completed!');
-                initiateTypingTest();
+                var speed = calculateSpeed(startTime, endTime, userText.length);
+                var accuracy = calculateAccuracy(userText, originalText);
+                speedElement.textContent = speed;
+                accuracyElement.textContent = accuracy;
+                clearInterval(timerInterval);
+                alert('Test complete!');
+                startTypingTest();
             }
         });
 
-        startTestButton.addEventListener('click', function() {
-            initiateTypingTest();
+        startButton.addEventListener('click', function() {
+            startTypingTest();
         });
+
+        setTextButton.addEventListener('click', function() {
+            var userText = userPassageElement.value.trim();
+            if (userText) {
+                currentText = userText;
+                textDisplay.textContent = currentText;
+                userPassageElement.value = ''; // Clear the user input field
+                alert('Custom text has been set!');
+            } else {
+                currentText = getRandomPhrase(); // Revert to a random phrase if input is empty
+                textDisplay.textContent = currentText;
+                alert('Custom text is empty. Default text is used.');
+            }
+        });
+
     </script>
 </body>
 </html>
