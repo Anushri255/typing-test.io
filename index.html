@@ -83,6 +83,69 @@
             <p>Accuracy: <span id="accuracy">0</span>%</p>
         </div>
     </div>
+    <script>
+        var textToTypeElement = document.getElementById('text-to-type');
+        var userInputElement = document.getElementById('user-input');
+        var speedElement = document.getElementById('speed');
+        var accuracyElement = document.getElementById('accuracy');
 
+        var phrases = [
+            'The quick brown fox jumps over the lazy dog.',
+            'Hello, is this your first day at school?',
+            'I am typing a sentence to test my typing speed.',
+            'The sun rises in the east and sets in the west.',
+            'Practice makes perfect. Keep typing!',
+            'Hackclub is amazing, wish I knew about it earlier'
+        ];
+
+        var startTime;
+
+        function getRandomPhrase() {
+            var randomIndex = Math.floor(Math.random() * phrases.length);
+            return phrases[randomIndex];
+        }
+
+        function calculateSpeed(startTime, endTime, textLength) {
+            var timeTaken = (endTime - startTime) / 60000; // minutes
+            var wordsTyped = textLength / 5; // Approximate words
+            return Math.round(wordsTyped / timeTaken);
+        }
+
+        function calculateAccuracy(inputText, originalText) {
+            var inputWords = inputText.split(' ');
+            var originalWords = originalText.split(' ');
+            var correctWords = 0;
+            for (var i = 0; i < inputWords.length; i++) {
+                if (inputWords[i] === originalWords[i]) {
+                    correctWords++;
+                }
+            }
+            return Math.round((correctWords / originalWords.length) * 100);
+        }
+
+        function startTypingTest() {
+            textToTypeElement.textContent = getRandomPhrase();
+            userInputElement.value = '';
+            userInputElement.focus();
+            startTime = new Date();
+        }
+
+        userInputElement.addEventListener('input', function() {
+            var originalText = textToTypeElement.textContent;
+            var userText = userInputElement.value;
+
+            if (userText === originalText) {
+                var endTime = new Date();
+                var speed = calculateSpeed(startTime, endTime, userText.length);
+                var accuracy = calculateAccuracy(userText, originalText);
+                speedElement.textContent = speed;
+                accuracyElement.textContent = accuracy;
+                alert('Test complete!');
+                startTypingTest();
+            }
+        });
+
+        window.onload = startTypingTest;
+    </script>
 </body>
 </html>
