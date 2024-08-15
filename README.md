@@ -2,6 +2,8 @@
 
 This is a simple Typing Test web application designed to help users practice their typing speed and accuracy. 
 
+## Hosted on https://anushri255.github.io/typing-test.io/
+
 ## Features
 
 - **Typing Challenge:** Users are given a random text to type as quickly and accurately as possible.
